@@ -1,0 +1,42 @@
+name: Build Edumetrics App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller pandas openpyxl python-docx pillow
+
+    - name: Build executable
+      run: |
+        pyinstaller --onefile --windowed --name Edumetrics main.py
+
+    - name: Prepare distribution folder
+      run: |
+        mkdir dist_package
+        copy dist\Edumetrics.exe dist_package\
+        if exist sample_results.xlsx copy sample_results.xlsx dist_package\
+        if exist school_logo.png copy school_logo.png dist_package\
+        powershell Compress-Archive -Path dist_package -DestinationPath EDUMETRICS-WINDOWS.zip
+
+    - name: Upload built ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: EDUMETRICS-WINDOWS
+        path: EDUMETRICS-WINDOWS.zip
