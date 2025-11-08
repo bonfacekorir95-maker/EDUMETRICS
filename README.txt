@@ -1,2 +1,1 @@
-EDUMETRICS - package v2
-Run main.py with Python or build with PyInstaller.
+Edumetrics 1.0 - release package. Run edumetrics.py with Python or build via GitHub Actions.
